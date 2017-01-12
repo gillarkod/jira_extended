@@ -6,6 +6,11 @@ from jira import (
     JIRA,
     JIRAError,
 )
+from jira.resources import (
+    Filter,
+    Board,
+)
+import json
 
 
 def move(self, project=None):
@@ -57,3 +62,36 @@ def customfield_by_name(self, name):
     return getattr(self.fields, field.get('id'))
 
 jira.Issue.customfield_by_name = customfield_by_name
+
+
+def create_board_agile(self, name, filter, preset='scrum'):
+    """
+    Create a new board using the agile create_board endpoint.
+
+    :param name: name of the board
+    :param filter: the filter to create the board with
+    :param preset: what preset to use for this board
+    :type preset: 'kanban', 'scrum'
+    """
+    payload = {}
+    if isinstance(filter, Filter):
+        filter_id = filter.id
+    else:
+        filter_id = filter
+
+    payload['name'] = name
+    payload['filterId'] = filter_id
+    payload['type'] = preset
+    url = self._get_url(
+        'board',
+        base='{server}/rest/agile/1.0/{path}',
+    )
+    response = self._session.post(
+        url,
+        data=json.dumps(payload),
+    )
+
+    raw_issue_json = response.json()
+    return Board(self._options, self._session, raw=raw_issue_json)
+
+jira.JIRA.create_board_agile = create_board_agile
