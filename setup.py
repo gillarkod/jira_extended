@@ -11,7 +11,7 @@ setup(
     author='marhag87',
     author_email='marhag87@gmail.com',
     url='https://github.com/gillarkod/jira_extended',
-    version='0.2.0',
+    version='0.3.0',
     packages=find_packages(),
     license='MIT',
     description='Module that extends jira with additional functionality',
